@@ -481,27 +481,61 @@ class phunction
 
 			if (preg_match('~^' . str_replace(array(':any:', ':num:'), array('[^/]+', '[0-9]+'), $route) . '~i', $result, $matches) > 0)
 			{
-				if (empty($callback) !== true)
+				if ($throttle > 0)
 				{
-					if ($throttle > 0)
-					{
-						usleep(intval(floatval($throttle) * 1000000));
-					}
+					usleep(intval(floatval($throttle) * 1000000));
+				}			
+				
+				$cm = count($matches);
 
-					if (empty($object) !== true)
-					{
-						$callback = array(self::Object($object), $callback);
+				if (!$callback && !$object) 
+				{
+					switch ($cm) {
+						case 1: 
+							return false;
+						break;
+						default:
+							list($object,$callback) = array_splice($matches,1,2);
+						break;
 					}
-
+				}
+				else if ($object && !$callback) 
+				{
+					switch ($cm) {
+						case 1:
+							$r = new ReflectionClass($object); 
+							$object = null;
+						break;
+						default:
+							list($callback) = array_splice($matches,1,1);
+						break;
+					}
+				}
+				else if (!$callback && $cm==2) 
+				{
+					$callback = array_pop($matches);
+				}
+				
+				if (empty($object) !== true)
+				{
+					$callback = array(self::Object($object), $callback);
+				}
+				
+				if (isset($r)) 
+				{
+					$r->newInstanceArgs(array_slice($matches, 1));
+				} else 
+				{
 					exit(call_user_func_array($callback, array_slice($matches, 1)));
 				}
-
+				
 				return true;
 			}
 		}
 
 		return false;
 	}
+
 
 	public static function Segment($key = null, $default = false)
 	{
