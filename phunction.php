@@ -172,7 +172,7 @@ class phunction
 						return $result[self::$id][$hash]->rowCount();
 					}
 
-					else if (preg_match('~^(?:SELECT|SHOW|EXPLAIN|DESC(?:RIBE)?|PRAGMA)\b~i', $query) > 0)
+					else if (preg_match('~^(?:SELECT|SHOW|EXPLAIN|DESC(?:RIBE)?|PRAGMA|CALL)\b~i', $query) > 0)
 					{
 						return $result[self::$id][$hash]->fetchAll(PDO::FETCH_ASSOC);
 					}
@@ -488,7 +488,11 @@ class phunction
 				
 				$cm = count($matches);
 
-				if (!$callback && !$object) 
+				if (!$callback && $cm==2) 
+				{
+					$callback = array_pop($matches);
+				}
+				else if (!$callback && !$object) 
 				{
 					switch ($cm) {
 						case 1: 
@@ -510,11 +514,7 @@ class phunction
 							list($callback) = array_splice($matches,1,1);
 						break;
 					}
-				}
-				else if (!$callback && $cm==2) 
-				{
-					$callback = array_pop($matches);
-				}
+				}				
 				
 				if (empty($object) !== true)
 				{
