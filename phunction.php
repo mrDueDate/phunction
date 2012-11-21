@@ -65,7 +65,7 @@ class phunction
 	{
 		if (class_exists($class = __CLASS__ . '_' . $key, false) !== true)
 		{
-			require(sprintf('%s/%s.php', dirname(__FILE__), str_replace('_', '/', $class)));
+			require(sprintf('%s'.DIRECTORY_SEPARATOR.'%s.php', dirname(__FILE__), str_replace('_', DIRECTORY_SEPARATOR, $class)));
 		}
 
 		return (substr_count($class, '_') > 1) ? new $class() : $this->$key = new $class();
