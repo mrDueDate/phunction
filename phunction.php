@@ -497,7 +497,7 @@ class phunction
 				}
 				else if (!$callback && !$object) 
 				{
-					switch ($cm) 
+					switch ($cp) 
 					{
 						case 1: 
 							return false;
@@ -509,7 +509,7 @@ class phunction
 				}
 				else if ($object && !$callback) 
 				{
-					switch ($cm) 
+					switch ($cp) 
 					{
 						case 1:
 							$r = new ReflectionClass($object); 
