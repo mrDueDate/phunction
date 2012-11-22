@@ -491,34 +491,23 @@ class phunction
 				}			
 				
 				$cp = count($params);				
-				if (!$callback && $cp==2) 
+				if (!$callback && $cp===1) 
 				{
 					$callback = array_shift($params);
 				}
 				else if (!$callback && !$object) 
 				{
-					switch ($cp) 
-					{
-						case 1: 
-							return false;
-						break;
-						default:
-							list($object,$callback) = array_splice($params,0,2);
-						break;
-					}
+					if ($cp) 
+						list($object,$callback) = array_splice($params,0,2);
+					else 
+						return false;
 				}
 				else if ($object && !$callback) 
 				{
-					switch ($cp) 
-					{
-						case 1:
-							$r = new ReflectionClass($object); 
-							$object = null;
-						break;
-						default:						
-							list($callback) = array_splice($params,0,1);
-						break;
-					}
+					if ($cp) 	
+						list($callback) = array_splice($params,0,1);
+					else					
+						$object = !($r = new ReflectionClass($object));
 				}			
 				
 				$matches = array_diff($matches,array($object,$callback));
