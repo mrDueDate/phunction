@@ -474,7 +474,7 @@ class phunction
 		{
 			$matches = array();
 
-			if (is_null($result) === true)
+			if ($result === null)
 			{
 				$result = preg_replace('~/+~', '/', substr(self::Value($_SERVER, 'PHP_SELF'), strlen(self::Value($_SERVER, 'SCRIPT_NAME'))) . '/');
 			}
@@ -755,6 +755,12 @@ class phunction
 	{
 		if (is_file(($path = str_replace('::', '/', $path)) . '.php') === true)
 		{
+		
+			if ($data === null) 
+			{
+				$data = ph()->View->Data();
+			}
+			
 			extract((array) $data);
 
 			if ((($minify === true) || ($return === true)) && (ob_start() === true))
