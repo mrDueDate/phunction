@@ -481,52 +481,59 @@ class phunction
 
 			if (preg_match('~^' . str_replace(array(':any:', ':num:'), array('[^/]+', '[0-9]+'), $route) . '~i', $result, $matches) > 0)
 			{
+				array_shift($matches);
+				
+				$params = array_diff($matches,array_filter($matches,'is_numeric'));
+
 				if ($throttle > 0)
 				{
 					usleep(intval(floatval($throttle) * 1000000));
 				}			
 				
-				$cm = count($matches);
-
-				if (!$callback && $cm==2) 
+				$cp = count($params);				
+				if (!$callback && $cp==2) 
 				{
-					$callback = array_pop($matches);
+					$callback = array_shift($params);
 				}
 				else if (!$callback && !$object) 
 				{
-					switch ($cm) {
+					switch ($cm) 
+					{
 						case 1: 
 							return false;
 						break;
 						default:
-							list($object,$callback) = array_splice($matches,1,2);
+							list($object,$callback) = array_splice($params,0,2);
 						break;
 					}
 				}
 				else if ($object && !$callback) 
 				{
-					switch ($cm) {
+					switch ($cm) 
+					{
 						case 1:
 							$r = new ReflectionClass($object); 
 							$object = null;
 						break;
-						default:
-							list($callback) = array_splice($matches,1,1);
+						default:						
+							list($callback) = array_splice($params,0,1);
 						break;
 					}
-				}				
+				}			
+				
+				$matches = array_diff($matches,array($object,$callback));
 				
 				if (empty($object) !== true)
 				{
 					$callback = array(self::Object($object), $callback);
-				}
+				}			
 				
 				if (isset($r)) 
 				{
-					$r->newInstanceArgs(array_slice($matches, 1));
+					$r->newInstanceArgs(array_slice($matches, 0));
 				} else 
 				{
-					exit(call_user_func_array($callback, array_slice($matches, 1)));
+					exit(call_user_func_array($callback, array_slice($matches, 0)));
 				}
 				
 				return true;
