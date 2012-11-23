@@ -753,7 +753,7 @@ class phunction
 
 	public static function View($path, $data = null, $minify = false, $return = false)
 	{
-		if (is_file(($path = str_replace('::', '/', $path)) . '.php') === true)
+		if (is_file(($path = str_replace('::', DIRECTORY_SEPARATOR, $path)) . '.php') === true)
 		{
 		
 			if ($data === null) 
