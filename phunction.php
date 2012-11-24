@@ -180,7 +180,7 @@ class phunction
 
 					else if (preg_match('~^(?:SELECT|SHOW|EXPLAIN|DESC(?:RIBE)?|PRAGMA|CALL)\b~i', $query) > 0)
 					{
-						return $result[self::$id][$hash]->fetchAll(PDO::FETCH_ASSOC);
+						return $result[self::$id][$hash]->fetchAll();
 					}
 
 					return true;
@@ -195,7 +195,8 @@ class phunction
 			try
 			{
 				$auth = array_slice(func_get_args(), 1, 2);
-				$db[self::$id] = new PDO(preg_replace('~^([^:]+):/{0,2}([^:/]+)(?::(\d+))?/(\w+)/?$~', '$1:host=$2;port=$3;dbname=$4', $query), array_shift($auth), array_shift($auth));
+				$options = func_num_args() > 3 ? (array)func_get_arg(3) : array	( PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC );
+				$db[self::$id] = new PDO(preg_replace('~^([^:]+):/{0,2}([^:/]+)(?::(\d+))?/(\w+)/?$~', '$1:host=$2;port=$3;dbname=$4', $query), array_shift($auth), array_shift($auth),$options);
 
 				if (strcmp('mysql', $db[self::$id]->getAttribute(PDO::ATTR_DRIVER_NAME)) === 0)
 				{
