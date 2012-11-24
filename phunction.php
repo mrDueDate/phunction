@@ -686,68 +686,66 @@ class phunction
 
 	public static function URL($url = null, $path = null, $query = null)
 	{
-		if (isset($url) === true)
+		if ($url !== null && (is_array($url = @parse_url($url)) === true) && (isset($url['scheme'], $url['host']) === true))
 		{
-			if ((is_array($url = @parse_url($url)) === true) && (isset($url['scheme'], $url['host']) === true))
+			$result = strtolower($url['scheme']) . '://';
+
+			if ((isset($url['user']) === true) || (isset($url['pass']) === true))
 			{
-				$result = strtolower($url['scheme']) . '://';
-
-				if ((isset($url['user']) === true) || (isset($url['pass']) === true))
-				{
-					$result .= ltrim(rtrim(self::Value($url, 'user') . ':' . self::Value($url, 'pass'), ':') . '@', '@');
-				}
-
-				$result .= strtolower($url['host']) . '/';
-
-				if ((isset($url['port']) === true) && (strcmp($url['port'], getservbyname($url['scheme'], 'tcp')) !== 0))
-				{
-					$result = rtrim($result, '/') . ':' . intval($url['port']) . '/';
-				}
-
-				if (($path !== false) && ((isset($path) === true) || (isset($url['path']) === true)))
-				{
-					if (is_scalar($path) === true)
-					{
-						if (($query !== false) && (preg_match('~[?&]~', $path) > 0))
-						{
-							$url['query'] = ltrim(rtrim(self::Value($url, 'query'), '&') . '&' . preg_replace('~^.*?[?&]([^#]*).*$~', '$1', $path), '&');
-						}
-
-						$url['path'] = '/' . ltrim(preg_replace('~[?&#].*$~', '', $path), '/');
-					}
-
-					while (preg_match('~/[.][.]?(?:/|$)~', $url['path']) > 0)
-					{
-						$url['path'] = preg_replace(array('~/+~', '~/[.](?:/|$)~', '~(?:^|/[^/]+)/[.]{2}(?:/|$)~'), '/', $url['path']);
-					}
-
-					$result .= preg_replace('~/+~', '/', ltrim($url['path'], '/'));
-				}
-
-				if (($query !== false) && ((isset($query) === true) || (isset($url['query']) === true)))
-				{
-					parse_str(self::Value($url, 'query'), $url['query']);
-
-					if (is_array($query) === true)
-					{
-						$url['query'] = array_merge($url['query'], $query);
-					}
-
-					if ((count($url['query'] = self::Voodoo(array_filter($url['query'], 'count'))) > 0) && (ksort($url['query']) === true))
-					{
-						$result .= rtrim('?' . http_build_query($url['query'], '', '&'), '?');
-					}
-				}
-
-				return preg_replace('~(%[0-9a-f]{2})~e', 'strtoupper("$1")', $result);
+				$result .= ltrim(rtrim(self::Value($url, 'user') . ':' . self::Value($url, 'pass'), ':') . '@', '@');
 			}
 
-			return false;
-		}
+			$result .= strtolower($url['host']) . '/';
 
+			if ((isset($url['port']) === true) && (strcmp($url['port'], getservbyname($url['scheme'], 'tcp')) !== 0))
+			{
+				$result = rtrim($result, '/') . ':' . intval($url['port']) . '/';
+			}
+
+			if (($path !== false) && ((isset($path) === true) || (isset($url['path']) === true)))
+			{
+				if (is_scalar($path) === true)
+				{
+					if (($query !== false) && (preg_match('~[?&]~', $path) > 0))
+					{
+						$url['query'] = ltrim(rtrim(self::Value($url, 'query'), '&') . '&' . preg_replace('~^.*?[?&]([^#]*).*$~', '$1', $path), '&');
+					}
+
+					$url['path'] = '/' . ltrim(preg_replace('~[?&#].*$~', '', $path), '/');
+				}
+
+				while (preg_match('~/[.][.]?(?:/|$)~', $url['path']) > 0)
+				{
+					$url['path'] = preg_replace(array('~/+~', '~/[.](?:/|$)~', '~(?:^|/[^/]+)/[.]{2}(?:/|$)~'), '/', $url['path']);
+				}
+
+				$result .= preg_replace('~/+~', '/', ltrim($url['path'], '/'));
+			}
+
+			if (($query !== false) && ((isset($query) === true) || (isset($url['query']) === true)))
+			{
+				parse_str(self::Value($url, 'query'), $url['query']);
+
+				if (is_array($query) === true)
+				{
+					$url['query'] = array_merge($url['query'], $query);
+				}
+
+				if ((count($url['query'] = self::Voodoo(array_filter($url['query'], 'count'))) > 0) && (ksort($url['query']) === true))
+				{
+					$result .= rtrim('?' . http_build_query($url['query'], '', '&'), '?');
+				}
+			}
+
+			return preg_replace('~(%[0-9a-f]{2})~e', 'strtoupper("$1")', $result);
+		}
 		else if (strlen($scheme = preg_replace('~^www$~i', 'http', getservbyport(self::Value($_SERVER, 'SERVER_PORT', 80), 'tcp'))) > 0)
 		{
-			return self::URL($scheme . '://' . self::Value($_SERVER, 'HTTP_HOST') . self::Value($_SERVER, 'REQUEST_URI'), $path, $query);
+			if (is_array($url))
+			{
+				list($query, $path, $url) = array($path, $url['path'], null);
+			}
+			return self::URL($scheme . '://' . self::Value($_SERVER, 'SERVER_NAME') . self::Value($_SERVER, 'REQUEST_URI'), $path, $query);
 		}
 
 		return false;
