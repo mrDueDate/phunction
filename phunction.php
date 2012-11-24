@@ -539,7 +539,27 @@ class phunction
 		return false;
 	}
 
-
+	/**
+	 *	Returns url segment.
+	 *	If called without parameters returns an array of url segments.
+	 * 	First parameter can be either an integer, or string.
+	 *	For integer segment indexed by given number is returned (0 - first),
+	 *	String is considered as a segment itself, and returned value is segment next to it.
+	 * 	When segment is not found second parameter is returned.
+	 *
+	 *	Example:
+	 *	<code>
+	 *	<?php
+	 *		//http://www.example.com/manage/users/list/C
+	 *		ph()->Segment(1); 		//returns 'users'
+	 * 		ph()->Segment('list');	//returns 'C'
+	 *		ph()->Segment();		//Array ( [0] => manage [1] => users [2] => list [3] => C )
+	 *	</code>
+	 *
+	 *	@param (int|string) $key Segment, or segment index. Defaults to null.
+	 *	@param (mixed) $default	Default value to return when not found. Defaults to null.
+	 *	@return string;
+	 */
 	public static function Segment($key = null, $default = false)
 	{
 		static $result = null;
