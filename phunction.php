@@ -59,6 +59,12 @@ class phunction
 		}
 
 		array_map('ini_set', array('html_errors', 'display_errors', 'default_socket_timeout'), array(0, 1, 3));
+		
+		if (spl_autoload_functions() === false)
+		{
+			spl_autoload_extensions('.php');
+			spl_autoload_register();			
+		}		
 	}
 
 	public function __get($key)
@@ -398,7 +404,7 @@ class phunction
 	{
 		static $result = array();
 
-		if (class_exists($object, false) === true)
+		if (class_exists($object, true) === true)
 		{
 			if (isset($result[self::$id][$object]) !== true)
 			{
