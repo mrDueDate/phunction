@@ -684,6 +684,16 @@ class phunction
 		return false;
 	}
 
+	/**
+	 *	Function can be used to get or create valid url.
+	 *	There are few use it can be used (all parameters are optional)
+	 *	
+	 *	First parameter can be omitted. So if path will be passed as first parameter, and query as second it will work as expected.
+	 *
+	 *	@param string $url	When null current url will be used as base, otherwise it should be any url which will be recreated as valid.
+	 *	@param string $path	Path (or segments) to attach to base url. If first parameter is given with path, its path part will be changed according to this parameter.
+	 *	@param array|string $query Query part. It will be appended to the one included in url (if any).
+	 */
 	public static function URL($url = null, $path = null, $query = null)
 	{
 		if ($url !== null && (is_array($url = @parse_url($url)) === true) && (isset($url['scheme'], $url['host']) === true))
