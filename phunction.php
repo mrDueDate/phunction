@@ -476,6 +476,15 @@ class phunction
 	public static function Route($route, $object = null, $callback = null, $method = null, $throttle = null)
 	{
 		static $result = null;
+		
+		if ($route === null) 
+		{
+			$route = '.*?';
+		} 
+		else if ($route === '/') 
+		{
+			$route .= '$';
+		}		
 
 		if ((strlen($method) * strcasecmp($method, self::Value($_SERVER, 'REQUEST_METHOD'))) == 0)
 		{
@@ -527,12 +536,16 @@ class phunction
 				if (isset($r)) 
 				{
 					$r->newInstanceArgs(array_slice($matches, 0));
-				} else 
+				} 
+				else 
 				{
-					exit(call_user_func_array($callback, array_slice($matches, 0)));
+					if (!is_callable($callback))
+					{
+						return false;
+					}				
+					call_user_func_array($callback, array_slice($matches, 0));
 				}
-				
-				return true;
+				exit;
 			}
 		}
 
