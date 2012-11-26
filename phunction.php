@@ -473,6 +473,46 @@ class phunction
 		return ($required === true) ? false : null;
 	}
 
+	/**
+	 *	Core function to create Routes in application.
+	 *	There are many ways to use it. This functionality is new, and is more or less an alternative to {@link phunction::Highway} method.
+	 *
+	 *	First of all there is a first argument ($route). It is the url path you want to assign action to.
+	 *	Route can use placeholders :num: and :any: which will match either a number 0-9 or any string. 
+	 *  It can also use direct regular expressions. Each part (including mentioned placeholders) in parentheses wil be captured and used in further processing.
+	 *	How captured values will be used depends on other conditions.
+	 *	
+	 *	Second argument (optional, can be null) should point to an object - object name (also works with namespaces), or object instance will work just fine.
+	 *	If there are any captured parameters, and third parameter ($callback) is null, first captured parameter will be used as object's method, and the rest will be passed to it as arguments.
+	 *	Of course only string parameters are considered as method names.
+	 *
+	 *	Third parameter is an callback. Method name (if $object is not null), or function name which will be called. Any captured parameters will be used as arguments to method or function.
+	 *
+	 *	Special conditions are as follows:
+	 *	Both $object and $callback are null, and there is one literal parameter - it is used as object, and rest (numeric) parameters are passed as arguments to its constructor.
+	 *	There is more then one literal paramter - first one is used as object name, second as method, rest as above.
+	 *	
+	 *	In any case route matching is done using regular expresions (as mentioned), and route strings are matched to the begining of string (^). 
+	 *	That means that there can be anything after your route, and when the first part matches, route is used. 
+	 *	This also allows to create more advanced matching, like match send and post actions to POST method, and anything else to GET (see examples).
+	 *
+	 *	As a general rule routes should be created from the specific ones to more general. 
+	 *
+	 *	There are two special cases. If route is only slash (also known as home page) it works only with home page. And when route is null it will match just everything. 
+	 *	Null route is usefull when creating 404 error page (and it should be the last Route if you want to handle it this way.
+	 *
+	 *	Examples
+	 *	<code>
+	 *	ph()->Route('post/(create|delete)','PostsController',null,'POST');	
+	 * 	//will match post/create and post/delete (called via POST method), and Create, Delete will be called as methods of PostsController object
+	 *
+	 *	ph()->Route('post/(:any:)/(:any:)','PostsController');	
+	 *	//will match everything else:
+	 *	// post/edit/4	-> PostController->edit(4);
+	 *	// post/list/recent -> PostController->list('recent');
+	 *	</code>
+	 *
+	 */	
 	public static function Route($route, $object = null, $callback = null, $method = null, $throttle = null)
 	{
 		static $result = null;
