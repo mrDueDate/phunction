@@ -330,7 +330,7 @@ class phunction
 			{
 				if ((empty($encoding) === true) && (function_exists('mb_detect_encoding') === true))
 				{
-					$encoding = mb_detect_encoding($data, 'ASCII,ISO-8859-15,UTF-8', true);
+					$encoding = mb_detect_encoding($data, mb_detect_order(), true);
 				}
 
 				$data = @iconv((empty($encoding) === true) ? 'UTF-8' : $encoding, 'UTF-8//IGNORE', $data);
